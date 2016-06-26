@@ -187,27 +187,27 @@ const Select = React.createClass({
 
 	componentDidUpdate (prevProps, prevState) {
 		// focus to the selected option
-		if (this.refs.menu && this.refs.focused && this.state.isOpen && !this.hasScrolledToOption) {
-			let focusedOptionNode = ReactDOM.findDOMNode(this.refs.focused);
-			let menuNode = ReactDOM.findDOMNode(this.refs.menu);
+		if (this._menu && this._focused && this.state.isOpen && !this.hasScrolledToOption) {
+			let focusedOptionNode = ReactDOM.findDOMNode(this._focused);
+			let menuNode = ReactDOM.findDOMNode(this._menu);
 			menuNode.scrollTop = focusedOptionNode.offsetTop;
 			this.hasScrolledToOption = true;
 		} else if (!this.state.isOpen) {
 			this.hasScrolledToOption = false;
 		}
 
-		if (this._scrollToFocusedOptionOnUpdate && this.refs.focused && this.refs.menu) {
+		if (this._scrollToFocusedOptionOnUpdate && this._focused && this._menu) {
 			this._scrollToFocusedOptionOnUpdate = false;
-			var focusedDOM = ReactDOM.findDOMNode(this.refs.focused);
-			var menuDOM = ReactDOM.findDOMNode(this.refs.menu);
+			var focusedDOM = ReactDOM.findDOMNode(this._focused);
+			var menuDOM = ReactDOM.findDOMNode(this._menu);
 			var focusedRect = focusedDOM.getBoundingClientRect();
 			var menuRect = menuDOM.getBoundingClientRect();
 			if (focusedRect.bottom > menuRect.bottom || focusedRect.top < menuRect.top) {
 				menuDOM.scrollTop = (focusedDOM.offsetTop + focusedDOM.clientHeight - menuDOM.offsetHeight);
 			}
 		}
-		if (this.props.scrollMenuIntoView && this.refs.menuContainer) {
-			var menuContainerRect = this.refs.menuContainer.getBoundingClientRect();
+		if (this.props.scrollMenuIntoView && this._menuContainer) {
+			var menuContainerRect = this._menuContainer.getBoundingClientRect();
 			if (window.innerHeight < menuContainerRect.bottom + this.props.menuBuffer) {
 				window.scrollBy(0, menuContainerRect.bottom + this.props.menuBuffer - window.innerHeight);
 			}
@@ -219,8 +219,8 @@ const Select = React.createClass({
 	},
 
 	focus () {
-		if (!this.refs.input) return;
-		this.refs.input.focus();
+		if (!this._input) return;
+		this._input.focus();
 
 		if (this.props.openAfterFocus) {
 			this.setState({
@@ -230,8 +230,8 @@ const Select = React.createClass({
 	},
 
 	blurInput() {
-		if (!this.refs.input) return;
-		this.refs.input.blur();
+		if (!this._input) return;
+		this._input.blur();
 	},
 
 	handleTouchMove (event) {
@@ -292,7 +292,7 @@ const Select = React.createClass({
 			this.focus();
 
 			// clears value so that the cursor will be a the end of input then the component re-renders
-			this.refs.input.getInput().value = '';
+			this._input.getInput().value = '';
 
 			// if the input is focused, ensure the menu is open
 			this.setState({
@@ -359,7 +359,7 @@ const Select = React.createClass({
 
 	handleInputBlur (event) {
 		// The check for menu.contains(activeElement) is necessary to prevent IE11's scrollbar from closing the menu in certain contexts.
-		if (this.refs.menu && (this.refs.menu === document.activeElement || this.refs.menu.contains(document.activeElement))) {
+		if (this._menu && (this._menu === document.activeElement || this._menu.contains(document.activeElement))) {
 			this.focus();
 			return;
 		}
@@ -739,7 +739,7 @@ const Select = React.createClass({
 				onBlur: this.handleInputBlur,
 				onChange: this.handleInputChange,
 				onFocus: this.handleInputFocus,
-				ref: 'input',
+				ref: (c) => this._input = c,
 				required: this.state.required,
 				value: this.state.inputValue
 			});
@@ -756,7 +756,7 @@ const Select = React.createClass({
 						tabIndex={this.props.tabIndex || 0}
 						onBlur={this.handleInputBlur}
 						onFocus={this.handleInputFocus}
-						ref="input"
+						ref={(c) => this._input = c}
 						aria-readonly={'' + !!this.props.disabled}
 						style={{ border: 0, width: 1, display:'inline-block' }}/>
 				);
@@ -875,7 +875,7 @@ const Select = React.createClass({
 							onFocus={this.focusOption}
 							option={option}
 							isSelected={isSelected}
-							ref={optionRef}
+							ref={(c) => { if (optionRef) this['_' + optionRef] = c; }}
 							>
 							{renderLabel(option)}
 						</Option>
@@ -900,7 +900,7 @@ const Select = React.createClass({
 			return (
 				<input
 					type="hidden"
-					ref="value"
+					ref={(c) => this._value = c}
 					name={this.props.name}
 					value={value}
 					disabled={this.props.disabled} />
@@ -909,7 +909,7 @@ const Select = React.createClass({
 		return valueArray.map((item, index) => (
 			<input key={'hidden.' + index}
 				type="hidden"
-				ref={'value' + index}
+				ref={(c) => this['_value' + index] = c}
 				name={this.props.name}
 				value={stringifyValue(item[this.props.valueKey])}
 				disabled={this.props.disabled} />
@@ -941,8 +941,8 @@ const Select = React.createClass({
 		}
 
 		return (
-			<div ref="menuContainer" className="Select-menu-outer" style={this.props.menuContainerStyle}>
-				<div ref="menu" role="listbox" className="Select-menu" id={this._instancePrefix + '-list'}
+			<div ref={(c) => this._menuContainer = c} className="Select-menu-outer" style={this.props.menuContainerStyle}>
+				<div ref={(c) => this._menu = c} role="listbox" className="Select-menu" id={this._instancePrefix + '-list'}
 						 style={this.props.menuStyle}
 						 onScroll={this.handleMenuScroll}
 						 onMouseDown={this.handleMouseDownOnMenu}>
@@ -992,11 +992,11 @@ const Select = React.createClass({
 		}
 
 		return (
-			<div ref="wrapper"
+			<div ref={(c) => this._wrapper = c}
 				 className={className}
 				 style={this.props.wrapperStyle}>
 				{this.renderHiddenField(valueArray)}
-				<div ref="control"
+				<div ref={(c) => this._control = c}
 						 className="Select-control"
 						 style={this.props.style}
 						 onKeyDown={this.handleKeyDown}

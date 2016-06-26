@@ -88,7 +88,7 @@ const Async = React.createClass({
 		}
 	},
 	focus () {
-		this.refs.select.focus();
+		this._select.focus();
 	},
 	resetState () {
 		this._currentRequestId = -1;
@@ -153,7 +153,7 @@ const Async = React.createClass({
 		return (
 			<Select
 				{...this.props}
-				ref="select"
+				ref={(c) => this._select = c}
 				isLoading={isLoading}
 				noResultsText={noResultsText}
 				onInputChange={this.loadOptions}
