@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JedWatson/react-select.git"
+    "url": "https://github.com/smothers/react-select.git"
   },
   "dependencies": {
     "classnames": "^2.2.4",
@@ -32,8 +32,8 @@
     "react-component-gulp-tasks": "^0.7.7",
     "react-dom": "^15.0",
     "react-gravatar": "^2.4.3",
-    "react-virtualized": "^6.3.0",
-    "react-virtualized-select": "^0.0.4",
+    "react-virtualized": "git+https://github.com/smothers/react-virtualized.git",
+    "react-virtualized-select": "git+https://github.com/smothers/react-virtualized-select.git",
     "sinon": "^1.17.3",
     "unexpected": "^10.13.2",
     "unexpected-dom": "^3.1.0",
